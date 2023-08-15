@@ -1,0 +1,223 @@
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Customer Churn Prediction</title>
+
+</head>
+<style>
+	body {
+		margin-top: 0px;
+		background-color: powderblue;
+		color: #4F1F19;
+		width: 100%;
+		transform: scale(90%);
+		font-family: arial, helvatica, sans-serif;
+	}
+    .description {
+		text-align: center;
+		font-size: 18px;
+		margin-bottom: 20px;
+	}
+	.row {
+		margin-top: 50px;
+		padding: 0px;
+		margin-bottom: 20px;
+	}
+
+	.result {
+		margin: auto;
+		text-align: center;
+		width: 75%;
+	}
+
+	.column {
+		margin-top: 4%;
+		float: left;
+		width: 50%;
+	}
+
+	input[type=number] {
+        width: 30%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        resize: vertical;
+    }
+
+	.button {
+		text-align: center;
+	}
+
+	.button-submit {
+		display: inline-block;
+		width: 8%;
+		padding: 8px 12px;
+		border: none;
+		border-radius: 4px;
+		background-color: #4CAF50;
+		color: white;
+		font-size: 15px;
+		cursor: pointer;
+		transition: background-color 0.3s ease;
+	}
+
+	.button-submit:hover {
+		background-color: #008cba;
+		color: white;
+	}
+
+	.button-submit:active {
+		background-color: #4caf55;
+		color: white;
+	}
+</style>
+
+<body>
+    <div class="row">
+        <h1 style="margin: auto; width: 35%; padding: 0.1%; text-align: center;">Customer Churn Prediction</h1>
+        <p class="description">Welcome to our Customer Churn Prediction portal. Provide the following details to
+			predict whether a customer is likely to churn or not.</p>
+
+        <form action="{{ url_for('predict') }}" method="post">
+            <div class="column">
+                <fieldset style="float:center; height:410px; margin-right:10px;">
+                    <legend><b></b></legend>
+                    <p><b>Tenure:</b><br>
+                        <input type="number" name="tenure" value="{{ tenure }}" {% if from_excel %}readonly{% endif %}
+                            required />
+                    </p>
+
+                    <p><b>City Tier:</b><br>
+                        <select name="citytier" id="citytier" required>
+                            <option value="1" {% if citytier==1 %}selected{% endif %}>Tier 1</option>
+                            <option value="2" {% if citytier==2 %}selected{% endif %}>Tier 2</option>
+                            <option value="3" {% if citytier==3 %}selected{% endif %}>Tier 3</option>
+                        </select>
+                    </p>
+
+                    <p><b>Distance to the warehouse from the residence:</b><br>
+                        <input type="number" name="warehousetohome" value="{{ warehouse }}" {% if from_excel
+                            %}readonly{% endif %} required />
+                    </p>
+
+                    <b>Gender of the customer:</b><br>
+                    <div style="float:left; margin-right: 1.5em;">
+                        <input type="radio" id="female" name="gender" value="Female" {% if gender=='Female' %}checked{%
+                            endif %} {% if from_excel %}readonly{% endif %} required />
+                        <label for="female">Female</label>
+                    </div>
+                    <div style="float:left; margin-right: 1.5em;">
+                        <input type="radio" id="male" name="gender" value="Male" {% if gender=='Male' %}checked{% endif
+                            %} {% if from_excel %}readonly{% endif %} required />
+                        <label for="male">Male</label>
+                    </div>
+                    <br>
+
+                    <p><b>Marital Status:</b><br>
+                        <select name="maritalstatus" id="maritalstatus" required>
+                            <option value="Divorced" {% if maritalstatus=='Divorced' %}selected{% endif %}>Divorced
+                            </option>
+                            <option value="Married" {% if maritalstatus=='Married' %}selected{% endif %}>Married
+                            </option>
+                            <option value="Single" {% if maritalstatus=='Single' %}selected{% endif %}>Single</option>
+                        </select>
+                    </p>
+
+                    <b>Any complaints in the last month:</b><br>
+                    <div style="float:left; margin-right: 1.5em;">
+                        <input type="radio" id="no" name="complain" value="0" {% if complain==0 %}checked{% endif %} {%
+                            if from_excel %}readonly{% endif %} required />
+                        <label for="Yes">Yes</label>
+                    </div>
+                    <div style="float:left; margin-right: 1.5em;">
+                        <input type="radio" id="yes" name="complain" value="1" {% if complain==1 %}checked{% endif %} {%
+                            if from_excel %}readonly{% endif %} required />
+                        <label for="No">No</label>
+                    </div>
+                    <br>
+
+                    <p><b>Cashback Amount:</b><br>
+                        <input type="number" name="cashbackamount" value="{{ cashback }}" {% if from_excel %}readonly{%
+                            endif %} required />
+                    </p>
+
+                </fieldset>
+            </div>
+
+            <div class="column">
+                <fieldset style="height:410px; margin-right:10px;">
+                    <legend><b></b></legend>
+                    <p><b>Number of days since last order placed:</b><br>
+                        <input type="number" name="lastorder" value="{{ lastorder }}" {% if from_excel %}readonly{%
+                            endif %} required />
+                    </p>
+
+                    <p><b>Preferred login device:</b><br>
+                        <select name="logindevice" id="logindevice" required>
+                            <option value="Computer" {% if logindevice=='Computer' %}selected{% endif %}>Computer
+                            </option>
+                            <option value="Mobile Phone" {% if logindevice=='Mobile Phone' %}selected{% endif %}>Mobile
+                                Phone</option>
+                        </select>
+                    </p>
+
+                    <p><b>Number of devices registered with the app:</b><br>
+                        <input type="number" name="numdevices" value="{{ numdevice }}" {% if from_excel %}readonly{%
+                            endif %} required />
+                    </p>
+
+                    <p><b>Preferred Payment Mode:</b><br>
+                        <select name="paymentmode" id="paymentmode" required>
+                            <option value="Cash on Delivery" {% if paymentmode=='Cash on Delivery' %}selected{% endif
+                                %}>Cash on Delivery</option>
+                            <option value="Credit Card" {% if paymentmode=='Credit Card' %}selected{% endif %}>Credit
+                                Card</option>
+                            <option value="Debit Card" {% if paymentmode=='Debit Card' %}selected{% endif %}>Debit Card
+                            </option>
+                            <option value="E wallet" {% if paymentmode=='E wallet' %}selected{% endif %}>E-wallet
+                            </option>
+                            <option value="UPI" {% if paymentmode=='UPI' %}selected{% endif %}>UPI</option>
+                        </select>
+                    </p>
+
+                    <p><b>Preferred Order Category:</b><br>
+                        <select name="ordercat" id="ordercat" required>
+                            <option value="Fashion" {% if ordercat=='Fashion' %}selected{% endif %}>Fashion</option>
+                            <option value="Grocery" {% if ordercat=='Grocery' %}selected{% endif %}>Grocery</option>
+                            <option value="Laptop & Accessory" {% if ordercat=='Laptop & Accessory' %}selected{% endif
+                                %}>Laptop</option>
+                            <option value="Mobile Phone" {% if ordercat=='Mobile Phone' %}selected{% endif %}>Mobile
+                            </option>
+                            <option value="Others" {% if ordercat=='Others' %}selected{% endif %}>Others</option>
+                        </select>
+                    </p>
+
+                    <p><b>Satisfaction score:</b><br>
+                        <select name="satisfactionscore" id="satisfactionscore" required>
+                            <option value="1" {% if score==1 %}selected{% endif %}>1</option>
+                            <option value="2" {% if score==2 %}selected{% endif %}>2</option>
+                            <option value="3" {% if score==3 %}selected{% endif %}>3</option>
+                            <option value="4" {% if score==4 %}selected{% endif %}>4</option>
+                            <option value="5" {% if score==5 %}selected{% endif %}>5</option>
+                        </select>
+                    </p>
+
+                    <p><b>Number of addresses registered with the app:</b><br>
+                        <input type="number" name="numaddress" value="{{ numaddress }}" {% if from_excel %}readonly{%
+                            endif %} required />
+                    </p>
+
+                </fieldset>
+            </div>
+            <div><br><br></div>
+            <div class="button" style="margin-top: 20px;">
+                <button type="submit" class="button-submit" style="cursor:pointer;"
+                    hover="background-color:blue;"><b>SUBMIT</b></button>
+            </div>
+        </form>
+        <br>
+    </div>
+</body>
+
+</html>

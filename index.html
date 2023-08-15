@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Customer Churn Prediction</title>
+
+</head>
+<style>
+	body {
+		margin-top: 0px;
+		background-color: powderblue;
+		color: #4F1F19;
+		width: 100%;
+		transform: scale(90%);
+		font-family: arial, helvatica, sans-serif;
+	}
+
+	.description {
+		text-align: center;
+		font-size: 18px;
+		margin-bottom: 20px;
+	}
+
+	.row {
+		margin-top: 50px;
+		padding: 0px;
+		margin-bottom: 20px;
+	}
+
+	.result {
+		margin: auto;
+		text-align: center;
+		width: 75%;
+	}
+
+	.column {
+		margin-top: 4%;
+		float: left;
+		width: 50%;
+	}
+
+	input[type=number] {
+		width: 30%;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		box-sizing: border-box;
+		resize: vertical;
+	}
+
+	.button {
+		text-align: center;
+	}
+
+	.button-submit {
+		display: inline-block;
+		width: 8%;
+		padding: 8px 12px;
+		border: none;
+		border-radius: 4px;
+		background-color: #4CAF50;
+		color: white;
+		font-size: 15px;
+		cursor: pointer;
+		transition: background-color 0.3s ease;
+	}
+
+	.button-submit:hover {
+		background-color: #008cba;
+		color: white;
+	}
+
+	.button-submit:active {
+		background-color: #4caf55;
+		color: white;
+	}
+
+	.input-table {
+		margin: auto;
+		width: 75%;
+		border-collapse: collapse;
+	}
+
+	.input-table th,
+	.input-table td {
+		border: 1px solid #ccc;
+		padding: 8px;
+		text-align: center;
+	}
+
+	.input-table th {
+		background-color: #f2f2f2;
+	}
+</style>
+
+<body>
+	<div class="row">
+		<h1 style="margin: auto; width: 35%; padding: 0.1%; text-align: center;">Customer Churn Prediction</h1>
+		<p class="description">Welcome to our Customer Churn Prediction portal. Provide the following details to
+			predict whether a customer is likely to churn or not.</p>
+
+		<form action="{{ url_for('predict')}}" method="post">
+			<div class="column">
+				<fieldset style="float:center; height:410px; margin-right:10px;">
+					<legend><b></b></legend>
+					<p><b>Tenure: </b><br>
+						<input type="number" step="1" min="0" name="tenure" placeholder="Total tenure"
+							required="required" />
+					</p>
+
+
+					<p><b>City Tier: </b><br>
+						<select name="citytier" id="citytier" required>
+							<option value="1">Tier 1</option>
+							<option value="2">Tier 2</option>
+							<option value="3">Tier 3</option>
+						</select>
+					</p>
+
+
+					<p><b>Distance to the warehouse from the residence: </b><br>
+						<input type="number" step="1" min="0" max="120" name="warehousetohome" placeholder="Distance"
+							required="required" />
+					</p>
+
+
+					<b>Gender of the customer: </b><br>
+					<div style="float:left; margin-right: 1.5em;">
+						<input type="radio" id="female" name="gender" value="Female" required="required" />
+						<label for="female">Female</label>
+					</div>
+					<div style="float:left; margin-right: 1.5em;">
+						<input type="radio" id="male" name="gender" value="Male" required="required" />
+						<label for="male">Male</label>
+					</div>
+					<br>
+
+
+					<p><b>Marital Status: </b><br>
+						<select name="maritalstatus" id="maritalstatus" required>
+							<option value="Divorced">Divorced</option>
+							<option value="Married">Married</option>
+							<option value="Single">Single</option>
+						</select>
+					</p>
+
+
+					<b>Any complaints in the last month?: </b><br>
+					<div style="float:left; margin-right: 1.5em;">
+						<input type="radio" id="no" name="complain" value="0" required="required" />
+						<label for="Yes">Yes</label>
+					</div>
+					<div style="float:left; margin-right: 1.5em;">
+						<input type="radio" id="yes" name="complain" value="1" required="required" />
+						<label for="No">No</label>
+					</div>
+					<br>
+
+
+					<p><b>Cashback Amount: </b><br>
+						<input type="number" step="1" min="0" max=500 name="cashbackamount" placeholder=" "
+							required="required" />
+					</p>
+
+				</fieldset>
+			</div>
+
+			<div class="column">
+				<fieldset style="height:410px; margin-right:10px;">
+
+					<p><b>Number of days since last order was placed: </b><br>
+						<input type="number" step="1" min="0" max="31" name="lastorder" placeholder=""
+							required="required" />
+					</p>
+
+					<p><b>Preferred login device: </b><br>
+						<select name="logindevice" id="logindevice" required>
+							<option value="Computer">Computer</option>
+							<option value="Mobile Phone">Mobile Phone</option>
+						</select>
+					</p>
+
+
+					<p><b>Number of devices registered with the app: </b><br>
+						<input type="number" step="1" min="0" max="20" name="numdevices" placeholder=""
+							required="required" />
+					</p>
+
+
+					<p><b>Preferred Payment Mode: </b><br>
+						<select name="paymentmode" id="paymentmode" required>
+							<option value="Cash on Delivery">Cash on Delivery</option>
+							<option value="Credit Card">Credit Card</option>
+							<option value="Debit Card">Debit Card</option>
+							<option value="E wallet">E-wallet</option>
+							<option value="UPI">UPI</option>
+						</select>
+					</p>
+
+
+					<p><b>Preferred Order Category: </b><br>
+						<select name="ordercat" id="ordercat" required>
+							<option value="Fashion">Fashion</option>
+							<option value="Grocery">Grocery</option>
+							<option value="Laptop & Accessory">Laptop</option>
+							<option value="Mobile Phone">Mobile</option>
+							<option value="Others">Others</option>
+						</select>
+					</p>
+
+
+					<p><b>Satisfaction score: </b><br>
+						<select name="satisfactionscore" id="satisfactionscore" required>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+						</select>
+					</p>
+
+
+					<p><b>Number of addresses registered with the app: </b><br>
+						<input type="number" step="1" min="0" max="20" name="numaddress" placeholder=""
+							required="required" />
+					</p>
+
+
+				</fieldset>
+			</div>
+
+			<div style="text-align: center;">
+				<button onclick="window.location.href='{{ url_for('fill_form_from_excel') }}';">Fill Form from
+					Excel</button>
+			</div>
+
+			<div class="button">
+				<button type="submit" class="button-submit" style="cursor:pointer;" hover="background-color:blue;">
+					<b>SUBMIT</b></button>
+			</div>
+		</form>
+		{% if show_table %}
+		<div style="text-align: center;">
+			<h2>Input Values Used for Prediction</h2>
+			<table class="input-table">
+				<tr>
+					<th>Tenure</th>
+					<th>City Tier</th>
+					<th>Distance to Warehouse</th>
+					<th>Gender</th>
+					<th>Marital Status</th>
+					<th>Complaint</th>
+					<th>Cashback Amount</th>
+					<th>Days since Last Order</th>
+					<th>Login Device</th>
+					<th>Number of Devices</th>
+					<th>Payment Mode</th>
+					<th>Order Category</th>
+					<th>Satisfaction Score</th>
+					<th>Number of Addresses</th>
+				</tr>
+				<tr>
+					<td>{{ tenure}}</td>
+					<td>{{ citytier }}</td>
+					<td>{{ warehouse }}</td>
+					<td>{{ gender }}</td>
+					<td>{{ maritalstatus }}</td>
+					<td>{{ complain }}</td>
+					<td>{{ cashback }}</td>
+					<td>{{ lastorder }}</td>
+					<td>{{ logindevice }}</td>
+					<td>{{ numdevice }}</td>
+					<td>{{ paymentmode }}</td>
+					<td>{{ ordercat }}</td>
+					<td>{{ score }}</td>
+					<td>{{ numaddress }}</td>
+				</tr>
+			</table>
+		</div>
+		{% endif %}
+		<div class="result" style="text-align: center;">
+			<div class="result" style="text-align: center;">
+				{% if prediction==1 %}
+				<h2>
+					<p style="padding: 0.3%; color:red;"><b>Customer will churn!</b></p>
+				</h2>
+				{% elif prediction==0 %}
+				<h2>
+					<p style="padding: 0.3%; color:green;"><b>Customer will not churn out!</b></p>
+				</h2>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>
